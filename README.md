@@ -1,3 +1,3 @@
 # dlserver
 
-# In progress, don't use / fork :'(
+# In progress, don't use 
