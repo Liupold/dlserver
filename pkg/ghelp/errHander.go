@@ -2,25 +2,26 @@ package ghelp
 
 import "fmt"
 
-func errCheck(err error) {
-	/* check if err message is nil
-	if err != nil panic */
+// ErrCheck : check if err message is nil
+func ErrCheck(err error) {
+	/* if err != nil panic */
 	if err != nil {
 		panic(err)
 	}
 }
 
-func isError(err error) bool {
+// IsError : check if err message is nil
+func IsError(err error) bool {
 	/* chek if err message is nil
-	panic or return true */
+	panic or return bool*/
 	if err != nil {
-		panic(err)
+		return true
 	}
-	return true
+	return false
 }
 
-func printErr(err error) {
-	/* only print err if not nil */
+//PrintErr : only print err if not nil
+func PrintErr(err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
