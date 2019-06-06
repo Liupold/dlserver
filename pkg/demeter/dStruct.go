@@ -6,10 +6,14 @@ import (
 
 // Demeter {TmpResp, Url, Length, Resumeable, Filename, RsespList} : struct with download details
 type Demeter struct {
-	TmpResp    *http.Response
-	URL        string
-	Length     int
-	Resumeable bool
-	Filename   string
-	RespList   []*http.Response
+	Filename    string
+	Length      int
+	Running     bool
+	RespList    []*http.Response
+	Resumeable  bool
+	ThCount     int // change this to int8 if needed
+	TmpResp     *http.Response
+	URL         string
+	Location    string
+	TmpLocation string
 }
