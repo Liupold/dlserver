@@ -1,8 +1,6 @@
 package demeter
 
 import (
-	"net/http"
-
 	"github.com/liupold/dlserver/pkg/ghelp"
 )
 
@@ -18,8 +16,11 @@ func MkDemeter(url string, thCount int, location string, tmpLocation string) Dem
 	demeterObj.Filename = filename
 	demeterObj.Length = length
 	demeterObj.Resumeable = resumeable
-	demeterObj.ThCount = thCount
-	demeterObj.RespList = make([]*http.Response, thCount)
+	if resumeable {
+		demeterObj.ThCount = thCount
+	} else {
+		demeterObj.ThCount = 1
+	}
 	demeterObj.Location = location
 	demeterObj.TmpLocation = tmpLocation
 	return demeterObj

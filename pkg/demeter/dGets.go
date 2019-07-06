@@ -1,7 +1,9 @@
 package demeter
 
 import (
+	"path"
 	"strconv"
+	"strings"
 
 	"github.com/liupold/dlserver/pkg/ghelp"
 )
@@ -35,5 +37,13 @@ func GetLength(demeterObj Demeter) int {
 
 // GetFilename : return the filename of (file to download)
 func GetFilename(demeterObj Demeter) string {
-	return ""
+	var filename string
+	val, ok := demeterObj.TmpResp.Header["Content-Disposition"]
+	if ok {
+		filename = strings.Split(val[0], "filename=")[1]
+		return filename
+	}
+	filename = path.Base(demeterObj.URL)
+	return filename
+
 }

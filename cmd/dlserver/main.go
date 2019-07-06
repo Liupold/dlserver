@@ -2,14 +2,24 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/liupold/dlserver/pkg/demeter"
+	"github.com/liupold/dlserver/pkg/ghelp"
 )
 
 func main() {
-	url := "https://mirror.downloadvn.com/videolan/vlc/3.0.6/win32/vlc-3.0.6-win32.exe"
-	demeterObj := demeter.MkDemeter(url, 8, "Downloads/", "~/tmp")
-	fmt.Printf("%+v\n", demeterObj)
-	demeter.Download(demeterObj)
-	print(&demeterObj)
+	for {
+		var url string
+		fmt.Print("URL -->")
+		fmt.Scan(&url)
+		demeterObj := demeter.MkDemeter(url, 8, "/home/rohnch/Downloads/", "/home/rohnch/cars")
+		// fmt.Printf("%+v\n", demeterObj)
+		var MainSyncG sync.WaitGroup
+		MainSyncG.Add(1)
+		demeter.Download(demeterObj, &MainSyncG)
+		fmt.Println(ghelp.ByteCountIEC(demeterObj.Length))
+		MainSyncG.Wait()
+		// print(&demeterObj, "\n")
+	}
 }

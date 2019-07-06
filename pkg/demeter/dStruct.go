@@ -16,4 +16,6 @@ type Demeter struct {
 	URL         string
 	Location    string
 	TmpLocation string
+	Done        bool
+	DoneLength  int64 // done upto
 }
