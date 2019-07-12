@@ -17,5 +17,6 @@ type Demeter struct {
 	Location    string
 	TmpLocation string
 	Done        bool
-	DoneLength  int64 // done upto
+	Paused      bool
+	DonelnList  []int64
 }

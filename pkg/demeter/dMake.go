@@ -23,6 +23,9 @@ func MkDemeter(url string, thCount int, location string, tmpLocation string) Dem
 	}
 	demeterObj.Location = location
 	demeterObj.TmpLocation = tmpLocation
+	demeterObj.Paused = false
+	demeterObj.Done = false
+	demeterObj.DonelnList = make([]int64, thCount)
 	return demeterObj
 
 }
