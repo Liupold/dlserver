@@ -17,6 +17,6 @@ type Demeter struct {
 	Location    string
 	TmpLocation string
 	Done        bool
-	Paused      bool
+	Active      bool
 	DonelnList  []int64
 }

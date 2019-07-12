@@ -12,7 +12,7 @@ import (
 )
 
 // WriteToFile :
-func WriteToFile(resp *http.Response, filepath string, doneln *int64, paused *bool) {
+func WriteToFile(resp *http.Response, filepath string, doneln *int64, active *bool) {
 	file, err := os.OpenFile(filepath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	ghelp.ErrCheck(err)
 	//open files
@@ -23,7 +23,7 @@ func WriteToFile(resp *http.Response, filepath string, doneln *int64, paused *bo
 		if err == io.EOF {
 			break
 		}
-		if *paused {
+		if !*active {
 			break
 		}
 		ghelp.ErrCheck(err)
@@ -99,6 +99,7 @@ func fileMerge(demterObj *Demeter) {
 
 // Download : dl the file
 func Download(demeterObj *Demeter, MainSyncG *sync.WaitGroup) {
+	demeterObj.Active = true
 	defer MainSyncG.Done()
 	client := &http.Client{}
 	var wg sync.WaitGroup
@@ -121,7 +122,7 @@ func Download(demeterObj *Demeter, MainSyncG *sync.WaitGroup) {
 				demeterObj.RespList = append(demeterObj.RespList, resp)
 
 				filepath := getPartName(demeterObj, index)
-				WriteToFile(resp, filepath, &demeterObj.DonelnList[index], &demeterObj.Paused)
+				WriteToFile(resp, filepath, &demeterObj.DonelnList[index], &demeterObj.Active)
 			}(index, dlRange)
 		} else if dlRange[0] == dlRange[1]+1 {
 			wg.Done()
@@ -135,8 +136,15 @@ func Download(demeterObj *Demeter, MainSyncG *sync.WaitGroup) {
 		}
 	}
 	wg.Wait()
-	fileMerge(demeterObj)
-	demeterObj.Done = true
+	var doneLN int64
+	for _, doneln := range demeterObj.DonelnList {
+		doneLN += doneln
+	}
+	if int(doneLN) == demeterObj.Length {
+		fileMerge(demeterObj)
+		demeterObj.Active = false
+		demeterObj.Done = true
+	}
 }
 
 //Pause : pause the download
@@ -144,5 +152,5 @@ func Pause(demeterObj *Demeter) {
 	if demeterObj.Resumeable != true {
 		fmt.Println("Warning: File will Not Resume")
 	}
-	demeterObj.Paused = true
+	demeterObj.Active = false
 }
