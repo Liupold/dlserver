@@ -63,22 +63,24 @@ func WaitBar(demeterObj *demeter.Demeter, syncGroup *sync.WaitGroup) {
 	bar := pb.StartNew(demeterObj.Length)
 	bar.Set(pb.Bytes, true)
 	var doneLN int64
-	for {
-		for _, doneln := range demeterObj.DonelnList {
-			doneLN += doneln
+	go func() {
+		for {
+			for _, doneln := range demeterObj.DonelnList {
+				doneLN += doneln
+			}
+			bar.SetCurrent(doneLN)
+			time.Sleep(time.Millisecond)
+			doneLN = 0
+			if demeterObj.Done {
+				bar.Finish()
+				break
+			}
+			if stopBar == true {
+				bar.Finish()
+				break
+			}
 		}
-		bar.SetCurrent(doneLN)
-		time.Sleep(time.Millisecond)
-		doneLN = 0
-		if demeterObj.Done {
-			bar.Finish()
-			break
-		}
-		if stopBar == true {
-			bar.Finish()
-			break
-		}
-	}
+	}()
 	syncGroup.Done()
 }
 
@@ -87,7 +89,7 @@ func ShowProgressAll() {
 	waitBarActive = true
 	var barSyncGroup sync.WaitGroup
 	for _, demeterObj := range dlList {
-		go WaitBar(&demeterObj, &barSyncGroup)
+		WaitBar(&demeterObj, &barSyncGroup)
 	}
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
