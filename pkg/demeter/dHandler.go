@@ -99,12 +99,12 @@ func fileMerge(demterObj *Demeter) {
 
 // Download : dl the file
 func Download(demeterObj *Demeter, MainSyncG *sync.WaitGroup) {
-	demeterObj.Active = true
 	defer MainSyncG.Done()
 	client := &http.Client{}
 	var wg sync.WaitGroup
 	rangeList := getDlRanges(demeterObj)
 	// demeterObj.DonelnList = make([]int64, demeterObj.ThCount)
+	demeterObj.Active = true
 	wg.Add(demeterObj.ThCount)
 	for index, dlRange := range rangeList {
 		if dlRange[0] < dlRange[1] {
@@ -136,10 +136,7 @@ func Download(demeterObj *Demeter, MainSyncG *sync.WaitGroup) {
 		}
 	}
 	wg.Wait()
-	var doneLN int64
-	for _, doneln := range demeterObj.DonelnList {
-		doneLN += doneln
-	}
+	doneLN := GetTotalDone(demeterObj)
 	if int(doneLN) == demeterObj.Length {
 		fileMerge(demeterObj)
 		demeterObj.Active = false
@@ -153,4 +150,13 @@ func Pause(demeterObj *Demeter) {
 		fmt.Println("Warning: File will Not Resume")
 	}
 	demeterObj.Active = false
+}
+
+// GetTotalDone : get the done of a demeter obj
+func GetTotalDone(demeterObj *Demeter) int {
+	var doneLN int64
+	for _, doneln := range demeterObj.DonelnList {
+		doneLN += doneln
+	}
+	return int(doneLN)
 }
